@@ -1,0 +1,59 @@
+---
+title: Node.js
+description: Use KarFlows APIs from Node.js.
+---
+
+## Unified message
+
+```js
+const baseUrl = process.env.KARFLOWS_BASE_URL || "https://your-karflows-domain.com";
+
+const response = await fetch(`${baseUrl}/api/omni/send`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.KARFLOWS_UNIFIED_TOKEN}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    to: "+255700000000",
+    text: "Your order has been received.",
+    channels: ["whatsapp_qr", "sms"],
+    deliveryMode: "fallback",
+    whatsappFrom: "447405993704",
+    sender: "APPROVED",
+  }),
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+## OTP flow
+
+```js
+async function sendOtp(to) {
+  const baseUrl = process.env.KARFLOWS_BASE_URL || "https://your-karflows-domain.com";
+  const res = await fetch(`${baseUrl}/api/omni/otp/send`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.KARFLOWS_UNIFIED_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ to, channels: ["whatsapp_qr", "sms"] }),
+  });
+  return res.json();
+}
+
+async function verifyOtp(pinId, pin) {
+  const baseUrl = process.env.KARFLOWS_BASE_URL || "https://your-karflows-domain.com";
+  const res = await fetch(`${baseUrl}/api/omni/otp/verify`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.KARFLOWS_UNIFIED_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ pinId, pin }),
+  });
+  return res.json();
+}
+```

@@ -1,0 +1,49 @@
+---
+title: Versioning
+description: Keep integrations stable as KarFlows grows.
+---
+
+KarFlows should keep public API behavior stable.
+
+## Current version
+
+```text
+v1
+```
+
+Some legacy endpoints are not versioned yet, such as:
+
+```text
+/api/sms/send
+/api/omni/send
+/api/qr/rest/send_message
+```
+
+They are still treated as stable customer APIs.
+
+## Compatibility rules
+
+KarFlows can safely add:
+
+- New optional request fields.
+- New response fields.
+- New log fields.
+- New enum values when documented.
+
+KarFlows should avoid changing:
+
+- Required fields.
+- Token behavior.
+- Existing status names.
+- Existing endpoint paths.
+
+## Recommended future path
+
+For major changes, add a versioned endpoint:
+
+```text
+/api/v2/omni/send
+```
+
+Keep older endpoints running until customers migrate.
+

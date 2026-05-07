@@ -1,0 +1,100 @@
+---
+title: SMS REST API
+description: Send transactional SMS messages from any backend.
+---
+
+Use the SMS REST API for direct text delivery. SMS is text-only. Media, documents, location, buttons, and lists belong to WhatsApp APIs.
+
+## Endpoint
+
+```http
+POST {{baseUrl}}/api/sms/send
+```
+
+## Headers
+
+```http
+Authorization: Bearer kfsms_your_token
+Content-Type: application/json
+```
+
+## Send SMS
+
+```bash
+curl -X POST "{{baseUrl}}/api/sms/send" \
+  -H "Authorization: Bearer kfsms_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "+255700000000",
+    "sender": "APPROVED",
+    "text": "Your booking is confirmed for Friday at 6pm."
+  }'
+```
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `to` | string | Yes | Recipient phone number with country code |
+| `sender` | string | Yes | Approved sender name owned by your account |
+| `text` | string | Yes | SMS body |
+| `reference` | string | No | Your own reference id |
+| `callbackUrl` | string | No | Optional callback URL for your application |
+
+## Sender name rules
+
+KarFlows rejects SMS requests when:
+
+- Sender name is not approved.
+- Sender name belongs to another customer.
+- The account has no SMS balance.
+- The plan does not allow SMS.
+- SMS API is disabled by an administrator.
+
+## Check balance
+
+```http
+GET {{baseUrl}}/api/sms/balance
+```
+
+```bash
+curl "{{baseUrl}}/api/sms/balance" \
+  -H "Authorization: Bearer kfsms_your_token"
+```
+
+## SMS logs
+
+```http
+GET {{baseUrl}}/api/sms/logs?limit=50
+```
+
+```bash
+curl "{{baseUrl}}/api/sms/logs?limit=50" \
+  -H "Authorization: Bearer kfsms_your_token"
+```
+
+## Success response
+
+```json
+{
+  "success": true,
+  "message": "SMS accepted",
+  "data": {
+    "reference": "sms_...",
+    "recipient": "255700000000",
+    "sender": "APPROVED",
+    "segments": 1,
+    "status": "sent"
+  }
+}
+```
+
+## Error response
+
+```json
+{
+  "success": false,
+  "message": "Sender name is not approved"
+}
+```
+

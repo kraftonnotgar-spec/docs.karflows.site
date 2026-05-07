@@ -1,0 +1,37 @@
+---
+title: C#
+description: Use KarFlows APIs from .NET.
+---
+
+## Unified message
+
+```csharp
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+
+var baseUrl = "https://your-karflows-domain.com";
+var token = Environment.GetEnvironmentVariable("KARFLOWS_UNIFIED_TOKEN");
+
+using var client = new HttpClient();
+client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+var payload = new
+{
+    to = "+255700000000",
+    text = "Your booking is confirmed.",
+    channels = new[] { "whatsapp_qr", "sms" },
+    deliveryMode = "fallback",
+    whatsappFrom = "447405993704",
+    sender = "APPROVED"
+};
+
+var response = await client.PostAsync(
+    $"{baseUrl}/api/omni/send",
+    new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+);
+
+var body = await response.Content.ReadAsStringAsync();
+Console.WriteLine(body);
+```
+

@@ -1,0 +1,65 @@
+---
+title: cURL
+description: Copy-paste HTTP examples for every KarFlows API.
+---
+
+cURL is the fastest way to test from a terminal, cPanel SSH, or server logs.
+
+Set your base URL once:
+
+```bash
+BASE_URL="https://your-karflows-domain.com"
+```
+
+## Unified text
+
+```bash
+curl -X POST "$BASE_URL/api/omni/send" \
+  -H "Authorization: Bearer $KARFLOWS_UNIFIED_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "+255700000000",
+    "text": "Your order has been received.",
+    "channels": ["whatsapp_qr", "sms"],
+    "deliveryMode": "fallback",
+    "whatsappFrom": "447405993704",
+    "sender": "APPROVED"
+  }'
+```
+
+## SMS
+
+```bash
+curl -X POST "$BASE_URL/api/sms/send" \
+  -H "Authorization: Bearer $KARFLOWS_SMS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "+255700000000",
+    "sender": "APPROVED",
+    "text": "Your booking is confirmed."
+  }'
+```
+
+## OTP
+
+```bash
+curl -X POST "$BASE_URL/api/omni/otp/send" \
+  -H "Authorization: Bearer $KARFLOWS_UNIFIED_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "+255700000000",
+    "channels": ["whatsapp_qr", "sms"],
+    "deliveryMode": "fallback"
+  }'
+```
+
+```bash
+curl -X POST "$BASE_URL/api/omni/otp/verify" \
+  -H "Authorization: Bearer $KARFLOWS_UNIFIED_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pinId": "kfot_...",
+    "pin": "123456"
+  }'
+```
+

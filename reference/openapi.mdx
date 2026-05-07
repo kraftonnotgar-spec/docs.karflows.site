@@ -1,0 +1,30 @@
+---
+title: OpenAPI
+description: Use the KarFlows OpenAPI spec to generate SDKs and API references.
+---
+
+The OpenAPI spec lives at:
+
+```text
+openapi/karflows.yaml
+```
+
+Use it with:
+
+- Mintlify API reference
+- Redocly
+- Scalar
+- Swagger UI
+- Speakeasy
+- Stainless
+- OpenAPI Generator
+
+## Generate a TypeScript SDK later
+
+```bash
+npx @openapitools/openapi-generator-cli generate \
+  -i openapi/karflows.yaml \
+  -g typescript-fetch \
+  -o ../sdks/typescript
+```
+

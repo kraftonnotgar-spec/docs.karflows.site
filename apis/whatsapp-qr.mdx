@@ -1,0 +1,55 @@
+---
+title: WhatsApp QR REST API
+description: Send WhatsApp messages from connected QR devices.
+---
+
+WhatsApp QR REST API sends messages through a connected WhatsApp QR device.
+
+## Endpoint
+
+```http
+GET or POST {{baseUrl}}/api/qr/rest/send_message
+```
+
+## Required parameters
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `messageType` | string | Yes | `text`, `image`, `video`, `audio`, `document`, or `location` |
+| `requestType` | string | Yes | `GET` or `POST` |
+| `token` | string | Yes | QR REST API token |
+| `from` | string | Yes | Sender phone with country code |
+| `to` | string | Yes | Recipient phone with country code |
+
+## Text message
+
+```bash
+curl -X POST "{{baseUrl}}/api/qr/rest/send_message" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your_qr_token" \
+  -d '{
+    "messageType": "text",
+    "requestType": "POST",
+    "token": "your_qr_token",
+    "from": "+447405993704",
+    "to": "+255700000000",
+    "text": "Hello from KarFlows"
+  }'
+```
+
+## Media parameters
+
+| Type | Required field | Optional |
+| --- | --- | --- |
+| `image` | `imageUrl` | `caption` |
+| `video` | `videoUrl` | `caption` |
+| `audio` | `aacUrl` | none |
+| `document` | `docUrl` | `caption` |
+| `location` | `lat`, `long` | `title` |
+
+## Notes
+
+- QR sessions can disconnect if the WhatsApp device is logged out or session files are missing.
+- For high-volume production delivery, use fallback with Unified Messaging API.
+- Always include country codes.
+

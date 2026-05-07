@@ -1,0 +1,80 @@
+---
+title: OTP API
+description: Generate, send, and verify one-time passcodes.
+---
+
+Use the OTP API when your application needs phone verification by SMS. For WhatsApp plus SMS OTP, use Unified OTP.
+
+## Send OTP
+
+```http
+POST {{baseUrl}}/api/sms/otp/send
+```
+
+```bash
+curl -X POST "{{baseUrl}}/api/sms/otp/send" \
+  -H "Authorization: Bearer kfotp_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "+255700000000"
+  }'
+```
+
+### Send response
+
+```json
+{
+  "success": true,
+  "message": "OTP sent",
+  "data": {
+    "pinId": "123456789",
+    "recipient": "255700000000",
+    "status": "sent"
+  }
+}
+```
+
+Store `pinId` on your server. Ask the customer for the code, then call verify.
+
+## Verify OTP
+
+```http
+POST {{baseUrl}}/api/sms/otp/verify
+```
+
+```bash
+curl -X POST "{{baseUrl}}/api/sms/otp/verify" \
+  -H "Authorization: Bearer kfotp_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pinId": "123456789",
+    "pin": "1234"
+  }'
+```
+
+Aliases accepted for the code: `pin`, `otp`, or `code`.
+
+## Logs
+
+```http
+GET {{baseUrl}}/api/sms/otp/logs?limit=50
+```
+
+```bash
+curl "{{baseUrl}}/api/sms/otp/logs?limit=50" \
+  -H "Authorization: Bearer kfotp_your_token"
+```
+
+## Billing
+
+- Sending an OTP consumes SMS balance after the gateway accepts the request.
+- Verification does not consume SMS balance.
+- Failed sends, incorrect PINs, and expired PINs are logged for debugging.
+
+## Best practices
+
+- Store `pinId` server-side.
+- Do not trust OTP verification done in browser-only code.
+- Rate limit signup/login forms before calling the OTP API.
+- Do not expose the OTP token in mobile apps.
+

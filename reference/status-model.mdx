@@ -1,0 +1,46 @@
+---
+title: Status Model
+description: Understand message, OTP, sender name, and top-up statuses.
+---
+
+KarFlows uses clear statuses so API clients and admins can understand what happened.
+
+## Message statuses
+
+| Status | Meaning |
+| --- | --- |
+| `pending` | Request was created but not completed |
+| `sent` | Channel accepted the message |
+| `delivered` | Delivery report confirmed delivery |
+| `failed` | Channel failed or rejected the request |
+| `skipped` | Channel was not attempted |
+
+## OTP statuses
+
+| Status | Meaning |
+| --- | --- |
+| `sent` | OTP was created and sent |
+| `verified` | Customer entered the correct code |
+| `incorrect` | Customer entered the wrong code |
+| `expired` | Code expired before verification |
+| `attempts_exceeded` | Too many verification attempts |
+| `failed` | OTP send failed |
+
+## Sender name statuses
+
+| Status | Meaning |
+| --- | --- |
+| `pending` | Customer submitted application |
+| `submitted_to_gateway` | Admin submitted it to mobile networks |
+| `approved` | Customer can send with this sender |
+| `rejected` | Customer must update or replace application |
+
+## SMS top-up statuses
+
+| Status | Meaning |
+| --- | --- |
+| `pending` | Checkout started but not confirmed |
+| `paid` | Payment confirmed and credits added |
+| `failed` | Payment failed |
+| `cancelled` | Checkout was cancelled |
+

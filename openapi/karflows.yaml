@@ -1,0 +1,496 @@
+openapi: "3.1.0"
+info:
+  title: KarFlows API
+  version: 1.0.0
+  description: SMS, OTP, WhatsApp QR, Meta WhatsApp, and Unified Messaging APIs.
+servers:
+  - url: https://{domain}
+    description: Your KarFlows installation
+    variables:
+      domain:
+        default: your-karflows-domain.com
+        description: Replace with your KarFlows app domain.
+security:
+  - bearerAuth: []
+tags:
+  - name: Unified
+  - name: SMS
+  - name: OTP
+  - name: WhatsApp QR
+  - name: Meta WhatsApp
+paths:
+  /api/omni/send:
+    post:
+      tags: [Unified]
+      summary: Send a unified message
+      description: Send text through WhatsApp QR, Meta WhatsApp, SMS, or fallback/all routing.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnifiedSendRequest"
+            examples:
+              fallback:
+                value:
+                  to: "+255700000000"
+                  text: "Your order has been received."
+                  channels: ["whatsapp_qr", "whatsapp_meta", "sms"]
+                  deliveryMode: fallback
+                  whatsappFrom: "447405993704"
+                  sender: APPROVED
+      responses:
+        "200":
+          description: Message response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/omni/otp/send:
+    post:
+      tags: [Unified]
+      summary: Send unified OTP
+      description: Generate an OTP and deliver it by selected channels.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnifiedOtpSendRequest"
+      responses:
+        "200":
+          description: OTP send response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/omni/otp/verify:
+    post:
+      tags: [Unified]
+      summary: Verify unified OTP
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtpVerifyRequest"
+      responses:
+        "200":
+          description: OTP verification response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/omni/logs:
+    get:
+      tags: [Unified]
+      summary: List unified logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Unified logs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/sms/send:
+    post:
+      tags: [SMS]
+      summary: Send SMS
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SmsSendRequest"
+      responses:
+        "200":
+          description: SMS response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/sms/balance:
+    get:
+      tags: [SMS]
+      summary: Check SMS balance
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Balance response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/sms/logs:
+    get:
+      tags: [SMS]
+      summary: List SMS logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: SMS logs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/sms/otp/send:
+    post:
+      tags: [OTP]
+      summary: Send SMS OTP
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtpSendRequest"
+      responses:
+        "200":
+          description: OTP send response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/sms/otp/verify:
+    post:
+      tags: [OTP]
+      summary: Verify SMS OTP
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtpVerifyRequest"
+      responses:
+        "200":
+          description: OTP verification response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/sms/otp/logs:
+    get:
+      tags: [OTP]
+      summary: List OTP logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: OTP logs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/sms/sender-id/request:
+    post:
+      tags: [SMS]
+      summary: Request a sender name
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SenderNameRequest"
+      responses:
+        "200":
+          description: Sender name application response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/qr/rest/send_message:
+    get:
+      tags: [WhatsApp QR]
+      summary: Send QR message with query parameters
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: messageType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [text, image, video, audio, document, location]
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: text
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: QR response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+    post:
+      tags: [WhatsApp QR]
+      summary: Send QR message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QrSendRequest"
+      responses:
+        "200":
+          description: QR response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/send-message:
+    post:
+      tags: [Meta WhatsApp]
+      summary: Send Meta WhatsApp conversational message
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Meta response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/send_templet:
+    post:
+      tags: [Meta WhatsApp]
+      summary: Send Meta WhatsApp template message
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Template response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+    UnifiedSendRequest:
+      type: object
+      required: [to, text]
+      properties:
+        to:
+          type: string
+          examples: ["+255700000000"]
+        text:
+          type: string
+        channels:
+          type: array
+          items:
+            type: string
+            enum: [whatsapp_qr, whatsapp_meta, sms]
+        deliveryMode:
+          type: string
+          enum: [fallback, all]
+          default: fallback
+        whatsappFrom:
+          type: string
+        sender:
+          type: string
+        reference:
+          type: string
+    UnifiedOtpSendRequest:
+      type: object
+      required: [to]
+      properties:
+        to:
+          type: string
+        channels:
+          type: array
+          items:
+            type: string
+            enum: [whatsapp_qr, whatsapp_meta, sms]
+        deliveryMode:
+          type: string
+          enum: [fallback, all]
+        whatsappFrom:
+          type: string
+        sender:
+          type: string
+        length:
+          type: integer
+          minimum: 4
+          maximum: 8
+        expiresIn:
+          type: integer
+          minimum: 60
+          maximum: 3600
+        template:
+          type: string
+    SmsSendRequest:
+      type: object
+      required: [to, sender, text]
+      properties:
+        to:
+          type: string
+        sender:
+          type: string
+        text:
+          type: string
+        reference:
+          type: string
+        callbackUrl:
+          type: string
+          format: uri
+    OtpSendRequest:
+      type: object
+      required: [to]
+      properties:
+        to:
+          type: string
+    OtpVerifyRequest:
+      type: object
+      required: [pinId, pin]
+      properties:
+        pinId:
+          type: string
+        pin:
+          type: string
+        otp:
+          type: string
+        code:
+          type: string
+    SenderNameRequest:
+      type: object
+      required: [sender_name, business_name, use_case, sample_content]
+      properties:
+        sender_name:
+          type: string
+          minLength: 3
+          maxLength: 11
+        business_name:
+          type: string
+        use_case:
+          type: string
+        sender_description:
+          type: string
+        sample_content:
+          type: string
+          maxLength: 170
+        company_origin:
+          type: string
+          enum: [local, international]
+        company_url:
+          type: string
+          format: uri
+    QrSendRequest:
+      type: object
+      required: [messageType, requestType, token, from, to]
+      properties:
+        messageType:
+          type: string
+          enum: [text, image, video, audio, document, location]
+        requestType:
+          type: string
+          enum: [GET, POST]
+        token:
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+        text:
+          type: string
+        imageUrl:
+          type: string
+          format: uri
+        videoUrl:
+          type: string
+          format: uri
+        aacUrl:
+          type: string
+          format: uri
+        docUrl:
+          type: string
+          format: uri
+        caption:
+          type: string
+        lat:
+          type: number
+        long:
+          type: number
+        title:
+          type: string

@@ -1,0 +1,182 @@
+---
+title: Unified Messaging API
+description: One API for WhatsApp-first delivery, SMS fallback, and OTP verification.
+---
+
+Unified Messaging API is the recommended API for new integrations. It lets your app choose channels, delivery mode, fallback rules, OTP templates, and logs from one token.
+
+## Endpoint
+
+```http
+POST {{baseUrl}}/api/omni/send
+```
+
+## Headers
+
+```http
+Authorization: Bearer kfmsg_your_token
+Content-Type: application/json
+```
+
+## Send text
+
+```bash
+curl -X POST "{{baseUrl}}/api/omni/send" \
+  -H "Authorization: Bearer kfmsg_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "+255700000000",
+    "text": "Your order has been received.",
+    "channels": ["whatsapp_qr", "whatsapp_meta", "sms"],
+    "deliveryMode": "fallback",
+    "whatsappFrom": "447405993704",
+    "sender": "APPROVED"
+  }'
+```
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `to` | string | Yes | Recipient phone number with country code |
+| `text` | string | Yes | Message body |
+| `channels` | array | No | `whatsapp_qr`, `whatsapp_meta`, `sms` |
+| `deliveryMode` | string | No | `fallback` or `all` |
+| `whatsappFrom` | string | QR only | QR sender number to use |
+| `sender` | string | SMS only | Approved SMS sender name |
+| `metaTemplate` | object | Meta templates | Template settings if Meta requires a template |
+| `reference` | string | No | Your own idempotency/reference value |
+
+## Delivery examples
+
+### WhatsApp first, SMS fallback
+
+```json
+{
+  "channels": ["whatsapp_qr", "whatsapp_meta", "sms"],
+  "deliveryMode": "fallback"
+}
+```
+
+### SMS only
+
+```json
+{
+  "channels": ["sms"],
+  "deliveryMode": "fallback"
+}
+```
+
+### WhatsApp QR and SMS together
+
+```json
+{
+  "channels": ["whatsapp_qr", "sms"],
+  "deliveryMode": "all"
+}
+```
+
+## Unified OTP
+
+Unified OTP is generated and verified by KarFlows. It can deliver the same code by WhatsApp QR, Meta, SMS, or a combination.
+
+### Send OTP
+
+```http
+POST {{baseUrl}}/api/omni/otp/send
+```
+
+```bash
+curl -X POST "{{baseUrl}}/api/omni/otp/send" \
+  -H "Authorization: Bearer kfmsg_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "+255700000000",
+    "channels": ["whatsapp_qr", "sms"],
+    "deliveryMode": "fallback",
+    "whatsappFrom": "447405993704",
+    "sender": "APPROVED",
+    "length": 6,
+    "expiresIn": 300,
+    "template": "Your login code is {{code}}. It expires in {{minutes}} minutes."
+  }'
+```
+
+### Verify OTP
+
+```http
+POST {{baseUrl}}/api/omni/otp/verify
+```
+
+```bash
+curl -X POST "{{baseUrl}}/api/omni/otp/verify" \
+  -H "Authorization: Bearer kfmsg_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pinId": "kfot_...",
+    "pin": "123456"
+  }'
+```
+
+## OTP security
+
+KarFlows protects OTP verification with:
+
+- Server-side code generation.
+- Hashed OTP storage.
+- Expiry windows.
+- Attempt limits per `pinId`.
+- Rate limits per phone and IP.
+- Logs for failed, expired, and blocked attempts.
+
+Never generate OTP codes on the frontend.
+
+## Logs
+
+```http
+GET {{baseUrl}}/api/omni/logs?limit=50
+```
+
+```bash
+curl "{{baseUrl}}/api/omni/logs?limit=50" \
+  -H "Authorization: Bearer kfmsg_your_token"
+```
+
+Logs include every channel attempt, not only the final success.
+
+## Webhooks
+
+Unified Webhooks notify your application when routing, delivery, and OTP events happen.
+
+Create them in the customer dashboard under **Unified API > Webhooks**. Webhooks follow the same plan rule as Unified API, so if Unified API is disabled or the plan expires, webhook management is blocked too.
+
+### Available events
+
+| Event | Description |
+| --- | --- |
+| `message.sent` | A Unified text message succeeded |
+| `message.failed` | All selected message channels failed |
+| `message.routed` | Routing finished and all channel attempts were logged |
+| `sms.sent` | SMS was used successfully |
+| `sms.failed` | SMS was attempted and failed |
+| `otp.sent` | Unified OTP was delivered |
+| `otp.verified` | OTP verification succeeded |
+| `otp.failed` | OTP delivery or verification failed |
+| `otp.expired` | OTP was verified after expiry |
+
+### Security headers
+
+Every webhook delivery is signed.
+
+```http
+X-KarFlows-Event: message.sent
+X-KarFlows-Delivery: kfwh_1778175301000_k9x2abp1
+X-KarFlows-Timestamp: 1778175301
+X-KarFlows-Signature: sha256=...
+```
+
+Verify the signature using the webhook secret shown when the webhook is created. See the [Webhooks](/reference/webhooks) reference for full verification examples.
+
+### Pagination
+
+Webhook endpoint lists are limited to 20 rows per page inside KarFlows. This keeps the dashboard usable for high-volume customers with many integrations.

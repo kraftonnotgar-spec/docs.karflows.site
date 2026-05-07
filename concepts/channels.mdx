@@ -1,0 +1,57 @@
+---
+title: Channels
+description: Understand WhatsApp QR, Meta WhatsApp, SMS, and unified delivery modes.
+---
+
+KarFlows can deliver through multiple channels.
+
+## Supported channel IDs
+
+| Channel ID | Meaning |
+| --- | --- |
+| `whatsapp_qr` | Send from a connected WhatsApp QR device |
+| `whatsapp_meta` | Send with Meta WhatsApp Cloud API |
+| `sms` | Send a text SMS through KarFlows SMS Gateway |
+
+## Fallback delivery
+
+Fallback mode tries channels in order and stops when one succeeds.
+
+```json
+{
+  "channels": ["whatsapp_qr", "whatsapp_meta", "sms"],
+  "deliveryMode": "fallback"
+}
+```
+
+Recommended for order alerts, booking confirmations, and OTP cost control.
+
+## Send to all
+
+All mode sends to every selected channel.
+
+```json
+{
+  "channels": ["whatsapp_qr", "sms"],
+  "deliveryMode": "all"
+}
+```
+
+Recommended only when the message must arrive in multiple places. Each successful channel can be charged separately.
+
+## WhatsApp QR sender selection
+
+If the customer has more than one QR device, pass `whatsappFrom`.
+
+```json
+{
+  "whatsappFrom": "447405993704"
+}
+```
+
+KarFlows validates that the sender belongs to the same customer account.
+
+## Meta sender selection
+
+Meta sending uses the customer's connected WhatsApp Business account. If a template is required, include the template data requested by your KarFlows Meta API setup.
+

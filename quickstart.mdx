@@ -1,0 +1,60 @@
+---
+title: Quickstart
+description: Send your first KarFlows message.
+---
+
+This quickstart sends a text message through the Unified Messaging API. Unified delivery can try WhatsApp QR, Meta WhatsApp, and SMS depending on your account settings.
+
+## 1. Get an API token
+
+In KarFlows:
+
+1. Open **Unified API**.
+2. Ask an administrator to enable your Unified Messaging API if it is locked by plan.
+3. Generate or copy your token.
+
+## 2. Send a message
+
+```bash
+curl -X POST "{{baseUrl}}/api/omni/send" \
+  -H "Authorization: Bearer kfmsg_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "+255700000000",
+    "text": "Hello from KarFlows",
+    "channels": ["whatsapp_qr", "whatsapp_meta", "sms"],
+    "deliveryMode": "fallback",
+    "whatsappFrom": "447405993704",
+    "sender": "APPROVED"
+  }'
+```
+
+## 3. Read the response
+
+```json
+{
+  "success": true,
+  "message": "Message sent",
+  "data": {
+    "reference": "kf_...",
+    "deliveryMode": "fallback",
+    "winningChannel": "whatsapp_qr",
+    "attempts": [
+      {
+        "channel": "whatsapp_qr",
+        "status": "sent"
+      }
+    ]
+  }
+}
+```
+
+## Delivery modes
+
+| Mode | Behavior |
+| --- | --- |
+| `fallback` | Stop after the first successful channel |
+| `all` | Send to every selected channel |
+
+Use `fallback` for cost control. Use `all` when the user must receive the same message across multiple channels.
+

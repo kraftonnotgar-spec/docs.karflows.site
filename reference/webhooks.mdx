@@ -1,0 +1,147 @@
+---
+title: Webhooks
+description: Receive Unified API delivery and OTP events from KarFlows.
+---
+
+Webhooks let your application react to events that happen after a Unified API request. Use them for delivery receipts, OTP verification status, internal order updates, and support alerts.
+
+Configure webhooks from **Unified API > Webhooks** in the customer dashboard. The list is paginated at 20 rows per page so large accounts stay easy to manage.
+
+## When to Use Webhooks
+
+Use webhooks when your system needs to know what happened after KarFlows accepted a request:
+
+- A Unified message was sent, failed, or routed through fallback.
+- An OTP was sent, verified, expired, or failed.
+- A message finally used SMS after WhatsApp QR or Meta failed.
+
+## Events
+
+| Event | Meaning |
+| --- | --- |
+| `message.sent` | A Unified message was accepted by at least one channel |
+| `message.failed` | All selected delivery channels failed |
+| `message.routed` | KarFlows finished route evaluation and logged all attempts |
+| `sms.sent` | SMS was the successful channel |
+| `sms.failed` | SMS was attempted and failed |
+| `otp.sent` | Unified OTP was delivered by at least one selected channel |
+| `otp.verified` | The customer entered the correct OTP |
+| `otp.failed` | OTP delivery or verification failed |
+| `otp.expired` | OTP verification failed because the code expired |
+
+## Payload Shape
+
+KarFlows sends a JSON body like this:
+
+```json
+{
+  "id": "kfwh_1778175301000_k9x2abp1",
+  "event": "message.sent",
+  "createdAt": "2026-05-07T12:00:00.000Z",
+  "data": {
+    "reference": "omni_1778175300000_a1b2c3",
+    "to": "255700000000",
+    "messageType": "text",
+    "status": "sent",
+    "winningChannel": "whatsapp_qr",
+    "deliveryMode": "fallback",
+    "requestedChannels": ["whatsapp_qr", "whatsapp_meta", "sms"],
+    "attempts": [
+      { "channel": "whatsapp_qr", "success": true, "messageId": "3EB0..." }
+    ]
+  }
+}
+```
+
+## Headers
+
+Every webhook request includes:
+
+| Header | Description |
+| --- | --- |
+| `User-Agent` | `KarFlows-Webhooks/1.0` |
+| `X-KarFlows-Event` | Event name, for example `message.sent` |
+| `X-KarFlows-Delivery` | Unique delivery id |
+| `X-KarFlows-Timestamp` | Unix timestamp in seconds |
+| `X-KarFlows-Signature` | HMAC SHA-256 signature |
+
+## Signature Verification
+
+When you create a webhook, KarFlows shows the signing secret once. Store it securely. KarFlows signs:
+
+```txt
+timestamp.raw_json_body
+```
+
+The signature format is:
+
+```txt
+sha256=<hex_digest>
+```
+
+### Node.js Example
+
+```js
+import crypto from "crypto";
+import express from "express";
+
+const app = express();
+
+app.post(
+  "/karflows/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const secret = process.env.KARFLOWS_WEBHOOK_SECRET;
+    const timestamp = req.get("X-KarFlows-Timestamp");
+    const received = req.get("X-KarFlows-Signature") || "";
+    const body = req.body.toString("utf8");
+
+    const expected =
+      "sha256=" +
+      crypto
+        .createHmac("sha256", secret)
+        .update(`${timestamp}.${body}`)
+        .digest("hex");
+
+    const valid =
+      received.length === expected.length &&
+      crypto.timingSafeEqual(Buffer.from(received), Buffer.from(expected));
+
+    if (!valid) {
+      return res.status(401).send("invalid signature");
+    }
+
+    const event = JSON.parse(body);
+    console.log("KarFlows event", event.event, event.data);
+
+    return res.sendStatus(200);
+  }
+);
+```
+
+## Recommended Response
+
+Return any `2xx` status when your application accepts the event.
+
+```js
+return res.sendStatus(200);
+```
+
+If your endpoint returns a non-2xx status or times out, KarFlows marks the delivery as failed in the dashboard. Store `id` or your own `data.reference` and ignore duplicates.
+
+## Local Development
+
+Webhook URLs must be publicly reachable. Localhost URLs are blocked. For development, use a public tunnel such as ngrok, Cloudflare Tunnel, or a staging domain.
+
+## Dashboard Controls
+
+In the Unified API Webhooks tab, a customer can:
+
+- Add endpoint URL and display name.
+- Select events to listen for.
+- Enable or disable an endpoint.
+- Rotate the signing secret.
+- Send a test webhook.
+- Delete endpoints that are no longer used.
+
+Admins can see customer endpoints and recent deliveries from the SMS & OTP Gateway dashboard.

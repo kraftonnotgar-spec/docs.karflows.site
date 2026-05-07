@@ -1,0 +1,83 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "KarFlows",
+  "colors": {
+    "primary": "#00A884",
+    "light": "#E6F7F3",
+    "dark": "#071314"
+  },
+  "favicon": "/favicon.png",
+  "navigation": [
+    {
+      "group": "Start Here",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "authentication",
+        "concepts/channels",
+        "concepts/sender-names",
+        "concepts/flows",
+        "concepts/unified-routing"
+      ]
+    },
+    {
+      "group": "Messaging APIs",
+      "pages": [
+        "apis/unified",
+        "apis/sms",
+        "apis/otp",
+        "apis/whatsapp-qr",
+        "apis/meta-whatsapp",
+        "apis/recipes"
+      ]
+    },
+    {
+      "group": "Operations",
+      "pages": [
+        "reference/webhooks",
+        "reference/error-codes",
+        "reference/rate-limits",
+        "reference/security",
+        "reference/logs",
+        "reference/status-model",
+        "reference/versioning"
+      ]
+    },
+    {
+      "group": "SDKs",
+      "pages": [
+        "sdks/overview",
+        "sdks/node",
+        "sdks/php",
+        "sdks/python",
+        "sdks/csharp",
+        "sdks/go",
+        "sdks/curl"
+      ]
+    },
+    {
+      "group": "Reference",
+      "pages": [
+        "reference/openapi",
+        "changelog"
+      ]
+    }
+  ],
+  "api": {
+    "openapi": "openapi/karflows.yaml"
+  },
+  "topbarLinks": [
+    {
+      "name": "Dashboard",
+      "url": "https://your-karflows-domain.com/user"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "API Status",
+      "url": "https://your-karflows-domain.com",
+      "icon": "signal"
+    }
+  ]
+}

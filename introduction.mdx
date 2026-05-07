@@ -1,0 +1,35 @@
+---
+title: Introduction
+description: Build SMS, OTP, WhatsApp QR, Meta WhatsApp, and unified fallback messaging with KarFlows.
+---
+
+KarFlows gives your application one clean messaging layer for customer notifications, OTP verification, WhatsApp delivery, SMS fallback, and audit logs.
+
+The goal is simple:
+
+- Use WhatsApp when it is the best channel.
+- Use SMS when the phone is not reachable on WhatsApp or when SMS is required.
+- Use OTP endpoints when your app needs secure phone verification.
+- Log every attempt so your team knows what happened.
+
+## Products
+
+| Product | Use it for |
+| --- | --- |
+| Unified Messaging API | WhatsApp-first delivery, SMS fallback, and OTP across selected channels |
+| SMS REST API | Transactional text messages |
+| OTP API | Generate, deliver, and verify one-time codes |
+| WhatsApp QR API | WhatsApp messages from connected QR devices |
+| Meta WhatsApp API | WhatsApp Cloud API messages and templates |
+
+## Base URL
+
+```text
+{{baseUrl}} = https://your-karflows-domain.com
+```
+
+All examples use `{{baseUrl}}` so your docs keep working if the KarFlows domain changes. Replace it with the domain where your KarFlows app is installed.
+
+## Provider Privacy
+
+KarFlows is the API your customers integrate with. Provider details are managed inside KarFlows and are not exposed through customer APIs.

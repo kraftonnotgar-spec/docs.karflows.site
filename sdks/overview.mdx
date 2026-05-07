@@ -1,0 +1,22 @@
+---
+title: SDK Overview
+description: SDK strategy for KarFlows customers.
+---
+
+KarFlows should start with documentation and OpenAPI, then generate SDKs.
+
+## Recommended SDKs
+
+| SDK | Why |
+| --- | --- |
+| Node.js | Most SaaS and ecommerce integrations |
+| PHP | WordPress, Laravel, CodeIgniter, WHMCS |
+| Python | Automation, internal tools, AI workflows |
+| Go | Later for high-scale backend teams |
+
+## Best tool path
+
+1. Keep `openapi/karflows.yaml` accurate.
+2. Generate SDKs from OpenAPI.
+3. Add hand-written helpers only where they improve developer experience.
+

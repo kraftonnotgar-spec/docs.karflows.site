@@ -1,0 +1,41 @@
+---
+title: Meta WhatsApp API
+description: Send messages using connected WhatsApp Business Cloud API accounts.
+---
+
+Meta WhatsApp API is used when your customer has connected a WhatsApp Business account through KarFlows.
+
+## Conversational endpoint
+
+```http
+POST {{baseUrl}}/api/v1/send-message?token=API_KEY
+```
+
+## Template endpoint
+
+```http
+POST {{baseUrl}}/api/v1/send_templet?token=API_KEY
+```
+
+## When to use Meta
+
+Use Meta WhatsApp when:
+
+- The customer has a WhatsApp Business account connected.
+- You need stable API delivery instead of a QR session.
+- You need approved WhatsApp templates.
+- You need official Cloud API behavior.
+
+## Unified routing
+
+In Unified Messaging API, include `whatsapp_meta` in `channels`.
+
+```json
+{
+  "channels": ["whatsapp_meta", "sms"],
+  "deliveryMode": "fallback"
+}
+```
+
+If Meta is not connected or cannot send, Unified fallback can continue to SMS when enabled.
+

@@ -1,0 +1,27 @@
+---
+title: Rate Limits
+description: Protect accounts from abuse and runaway integrations.
+---
+
+KarFlows applies rate limits to sensitive operations, especially OTP.
+
+## Recommended production limits
+
+| Action | Suggested limit |
+| --- | --- |
+| OTP send to one phone | 5 requests per 10 minutes |
+| OTP verify for one pinId | 8 attempts per 15 minutes |
+| OTP send from one IP | 30 requests per 10 minutes |
+| OTP verify from one IP | 60 attempts per 15 minutes |
+
+## Client behavior
+
+When rate limited, wait before retrying. Do not retry aggressively from frontend code.
+
+```json
+{
+  "success": false,
+  "message": "Too many OTP requests for this phone. Please wait before requesting another code."
+}
+```
+

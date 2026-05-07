@@ -1,0 +1,45 @@
+---
+title: Security
+description: Security rules for production messaging integrations.
+---
+
+## Keep tokens server-side
+
+KarFlows API tokens must live on your backend.
+
+Bad:
+
+```js
+// Browser code - do not do this
+const token = "kfmsg_live_token";
+```
+
+Good:
+
+```js
+// Backend code
+const baseUrl = process.env.KARFLOWS_BASE_URL || "https://your-karflows-domain.com";
+
+await fetch(`${baseUrl}/api/omni/send`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.KARFLOWS_UNIFIED_TOKEN}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+});
+```
+
+## OTP verification
+
+Your backend should:
+
+1. Call send OTP.
+2. Store `pinId` against the user/session.
+3. Ask the customer for the code.
+4. Call verify OTP.
+5. Mark the phone as verified only when KarFlows returns success.
+
+## Sender names
+
+Never let users type arbitrary sender names in your public UI. Store approved sender names server-side and send only those values to KarFlows.

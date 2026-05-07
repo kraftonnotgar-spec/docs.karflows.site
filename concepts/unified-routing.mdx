@@ -1,0 +1,98 @@
+---
+title: Unified Routing
+description: Design WhatsApp, Meta, SMS, and OTP fallback routes.
+---
+
+Unified Routing lets one request decide where a message should go.
+
+## Route order
+
+The route order controls which channel KarFlows tries first.
+
+```json
+{
+  "channels": ["whatsapp_qr", "whatsapp_meta", "sms"]
+}
+```
+
+Recommended default:
+
+1. `whatsapp_qr`
+2. `whatsapp_meta`
+3. `sms`
+
+## Delivery modes
+
+### Fallback
+
+Stops after the first successful channel.
+
+```json
+{
+  "deliveryMode": "fallback"
+}
+```
+
+Use this for:
+
+- OTP
+- Order alerts
+- Booking confirmations
+- Cost control
+
+### All
+
+Sends to every selected channel.
+
+```json
+{
+  "deliveryMode": "all"
+}
+```
+
+Use this when:
+
+- The message is urgent.
+- The customer requested both WhatsApp and SMS.
+- The business wants a written SMS copy.
+
+## Channel readiness
+
+Before routing, KarFlows checks whether each channel is ready.
+
+| Channel | Readiness check |
+| --- | --- |
+| WhatsApp QR | Sender exists, belongs to customer, session is available |
+| Meta WhatsApp | Customer connected Meta and token/phone id exists |
+| SMS | SMS API active, approved sender name, balance available |
+
+## Charging logic
+
+KarFlows should charge only successful channels.
+
+Fallback example:
+
+```text
+QR failed -> Meta failed -> SMS sent
+```
+
+Only SMS is deducted.
+
+All mode example:
+
+```text
+QR sent -> SMS sent
+```
+
+Both successful channels may be charged.
+
+## Recommended route policies
+
+| Use case | Channels | Mode |
+| --- | --- | --- |
+| Login OTP | `whatsapp_qr`, `sms` | `fallback` |
+| High-risk OTP | `whatsapp_qr`, `sms` | `all` |
+| Order confirmation | `whatsapp_qr`, `whatsapp_meta`, `sms` | `fallback` |
+| Marketing SMS | `sms` | `fallback` |
+| Support notification | `whatsapp_qr` | `fallback` |
+

@@ -1,0 +1,27 @@
+---
+title: Logs
+description: Inspect delivery attempts, failures, and OTP verification history.
+---
+
+Logs are available in the KarFlows dashboard and through API endpoints.
+
+## SMS logs
+
+```http
+GET /api/sms/logs?limit=50
+```
+
+## OTP logs
+
+```http
+GET /api/sms/otp/logs?limit=50
+```
+
+## Unified logs
+
+```http
+GET /api/omni/logs?limit=50
+```
+
+Unified logs record every attempted channel. This is important when fallback is enabled because the final success might be SMS even if WhatsApp was tried first.
+

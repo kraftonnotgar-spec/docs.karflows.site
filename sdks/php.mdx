@@ -1,0 +1,53 @@
+---
+title: PHP
+description: Use KarFlows APIs from PHP and Laravel.
+---
+
+## Plain PHP cURL
+
+```php
+<?php
+$payload = [
+  "to" => "+255700000000",
+  "text" => "Your booking is confirmed.",
+  "channels" => ["whatsapp_qr", "sms"],
+  "deliveryMode" => "fallback",
+  "whatsappFrom" => "447405993704",
+  "sender" => "APPROVED"
+];
+
+$baseUrl = getenv("KARFLOWS_BASE_URL") ?: "https://your-karflows-domain.com";
+$ch = curl_init($baseUrl . "/api/omni/send");
+curl_setopt_array($ch, [
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_POST => true,
+  CURLOPT_HTTPHEADER => [
+    "Authorization: Bearer " . getenv("KARFLOWS_UNIFIED_TOKEN"),
+    "Content-Type: application/json"
+  ],
+  CURLOPT_POSTFIELDS => json_encode($payload),
+]);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+echo $response;
+```
+
+## Laravel HTTP client
+
+```php
+use Illuminate\Support\Facades\Http;
+
+$response = Http::withToken(config('services.karflows.unified_token'))
+    ->post(config('services.karflows.base_url') . '/api/omni/send', [
+        'to' => '+255700000000',
+        'text' => 'Your order has been received.',
+        'channels' => ['whatsapp_qr', 'sms'],
+        'deliveryMode' => 'fallback',
+        'whatsappFrom' => '447405993704',
+        'sender' => 'APPROVED',
+    ]);
+
+return $response->json();
+```

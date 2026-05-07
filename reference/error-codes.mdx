@@ -1,0 +1,41 @@
+---
+title: Error Codes
+description: Common API errors and how to fix them.
+---
+
+KarFlows returns JSON errors with `success: false`.
+
+## Authentication
+
+| Message | Meaning | Fix |
+| --- | --- | --- |
+| `Invalid token` | Token does not exist or is malformed | Copy the token again |
+| `API is disabled` | Admin disabled the product token | Ask admin to enable it |
+| `Plan has expired` | Customer plan is expired or locked | Renew or update plan |
+
+## SMS
+
+| Message | Meaning | Fix |
+| --- | --- | --- |
+| `Sender name is not approved` | Sender is pending/rejected/not owned by customer | Use an approved sender |
+| `Insufficient SMS balance` | Wallet has no segments left | Buy SMS credits or ask admin to top up |
+| `to is required` | Missing recipient | Send phone number with country code |
+| `text is required` | Missing message body | Include `text` |
+
+## OTP
+
+| Message | Meaning | Fix |
+| --- | --- | --- |
+| `pinId is required` | Verify request missing OTP id | Store `pinId` from send response |
+| `pin is required` | Verify request missing code | Send `pin`, `otp`, or `code` |
+| `OTP expired` | Code expired | Send a new OTP |
+| `Too many verification attempts` | Security limit hit | Request a new OTP after cooldown |
+
+## Unified
+
+| Message | Meaning | Fix |
+| --- | --- | --- |
+| `No delivery channel succeeded` | Every selected channel failed | Check channel settings and logs |
+| `QR sender is not available` | QR device is offline or not owned by customer | Reconnect QR or select another sender |
+| `Meta account is not connected` | Meta channel selected but unavailable | Connect Meta or remove channel |
+

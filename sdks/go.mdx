@@ -1,0 +1,46 @@
+---
+title: Go
+description: Use KarFlows APIs from Go.
+---
+
+## Unified message
+
+```go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
+)
+
+func main() {
+	baseURL := "https://your-karflows-domain.com"
+	token := os.Getenv("KARFLOWS_UNIFIED_TOKEN")
+
+	payload := map[string]any{
+		"to":           "+255700000000",
+		"text":         "Your order has been received.",
+		"channels":     []string{"whatsapp_qr", "sms"},
+		"deliveryMode": "fallback",
+		"whatsappFrom": "447405993704",
+		"sender":       "APPROVED",
+	}
+
+	body, _ := json.Marshal(payload)
+	req, _ := http.NewRequest("POST", baseURL+"/api/omni/send", bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer res.Body.Close()
+
+	fmt.Println("Status:", res.Status)
+}
+```
+

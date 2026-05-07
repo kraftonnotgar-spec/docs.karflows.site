@@ -1,0 +1,30 @@
+---
+title: Python
+description: Use KarFlows APIs from Python.
+---
+
+## Unified message
+
+```python
+import os
+import requests
+
+response = requests.post(
+    f"{os.getenv('KARFLOWS_BASE_URL', 'https://your-karflows-domain.com')}/api/omni/send",
+    headers={
+        "Authorization": f"Bearer {os.environ['KARFLOWS_UNIFIED_TOKEN']}",
+        "Content-Type": "application/json",
+    },
+    json={
+        "to": "+255700000000",
+        "text": "Your order has been received.",
+        "channels": ["whatsapp_qr", "sms"],
+        "deliveryMode": "fallback",
+        "whatsappFrom": "447405993704",
+        "sender": "APPROVED",
+    },
+    timeout=30,
+)
+
+print(response.json())
+```
